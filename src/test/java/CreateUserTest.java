@@ -6,11 +6,14 @@ import io.restassured.specification.RequestSpecification;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import reponseObject.ResponseToken;
+import reponseObject.ResponseUser;
+import requestObject.RequestUser;
 
 public class CreateUserTest {
 
     public String baseURI = "https://demoqa.com";
-    public JSONObject requestBody;
+    public RequestUser requestBody;
 
     @Test
     public void testMethod(){
@@ -30,13 +33,10 @@ public class CreateUserTest {
         request.contentType(ContentType.JSON);
         request.baseUri(baseURI);
 
-        String username = "larisaTesting" + System.currentTimeMillis();
-        requestBody = new JSONObject();
-        requestBody.put("userName", username);
-        requestBody.put("password", "Automation123@!");
+        requestBody =  new RequestUser("src/test/resources/createUser.json");
 
         //adaugam request body
-        request.body(requestBody.toString());
+        request.body(requestBody);
 
         //executam requestul de tip POST la un endpoint specific
         Response response = request.post("/Account/v1/User");
@@ -47,8 +47,9 @@ public class CreateUserTest {
 
         Assert.assertTrue(response.getStatusLine().contains("Created"));
 
-        ResponseBody responseBody = response.getBody();
-        Assert.assertTrue(responseBody.asPrettyString().contains(username));
+        ResponseUser responseBody= response.getBody().as(ResponseUser.class);
+        Assert.assertTrue(responseBody.getUsername().equals(requestBody.getUserName()));
+        System.out.println(responseBody);
     }
 
     public void generateToken(){
@@ -60,7 +61,7 @@ public class CreateUserTest {
         request.baseUri(baseURI);
 
         //adaugam request body
-        request.body(requestBody.toString());
+        request.body(requestBody);
 
         //executam requestul de tip POST la un endpoint specific
         Response response = request.post("/Account/v1/GenerateToken");
@@ -71,7 +72,13 @@ public class CreateUserTest {
 
         Assert.assertTrue(response.getStatusLine().contains("OK"));
 
-        ResponseBody responseBody = response.getBody();
-        Assert.assertTrue(responseBody.asPrettyString().contains("token"));
+        ResponseToken responseBody=response.getBody().as(ResponseToken.class);
+
+        System.out.println(responseBody.getToken());
+
+        System.out.println(responseBody);
+
+        System.out.println(response.getHeaders());
+
     }
 }
