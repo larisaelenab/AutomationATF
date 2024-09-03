@@ -1,19 +1,28 @@
+package tests;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
 import io.restassured.specification.RequestSpecification;
-import org.json.JSONObject;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import pages.LoginPage;
+import pages.ProfilePage;
 import reponseObject.ResponseToken;
 import reponseObject.ResponseUser;
 import requestObject.RequestUser;
 
-public class CreateUserTest {
+import java.time.Duration;
+
+public class CreateUserFETest {
 
     public String baseURI = "https://demoqa.com";
     public RequestUser requestBody;
+    public WebDriver driver;
+    public String userId;
+    public String token;
 
     @Test
     public void testMethod(){
@@ -22,6 +31,18 @@ public class CreateUserTest {
 
         System.out.println("====== STEP 2: Generate token ======");
         generateToken();
+
+        System.out.println("====== STEP 3: Get user details ======");
+        validateAccountBE();
+
+        System.out.println("====== STEP 4: Login user ======");
+        loginApplication();
+
+        System.out.println("====== STEP 5: Delete user ======");
+        deleteAccountFE();
+
+        System.out.println("====== STEP 6: Get user details ======");
+        validateAccountBE();
 
     }
 
@@ -50,6 +71,7 @@ public class CreateUserTest {
         ResponseUser responseBody= response.getBody().as(ResponseUser.class);
         Assert.assertTrue(responseBody.getUsername().equals(requestBody.getUserName()));
         System.out.println(responseBody);
+        userId = responseBody.getUserId();
     }
 
     public void generateToken(){
@@ -78,7 +100,44 @@ public class CreateUserTest {
 
         System.out.println(responseBody);
 
-        System.out.println(response.getHeaders());
+        token = responseBody.getToken();
 
     }
+
+    public void validateAccountBE(){
+        RequestSpecification request = RestAssured.given();
+        request.contentType(ContentType.JSON);
+        request.baseUri(baseURI);
+
+        request.header("Authorization", "Bearer " + token);
+
+        Response response = request.get("/Account/v1/User/" + userId);
+
+        response.body().prettyPrint();
+
+
+    }
+
+    public void loginApplication(){
+        driver = new ChromeDriver();
+        driver.get("https://demoqa.com/login");
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        LoginPage loginPage = new LoginPage(driver);
+        loginPage.loginIntoApplication(requestBody);
+
+        ProfilePage profilePage = new ProfilePage(driver);
+        profilePage.validateLoginProcess(requestBody);
+
+
+    }
+
+    public void deleteAccountFE(){
+
+        ProfilePage profilePage = new ProfilePage(driver);
+        profilePage.deleteAccount();
+
+    }
+
 }
