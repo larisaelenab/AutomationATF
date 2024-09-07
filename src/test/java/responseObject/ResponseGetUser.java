@@ -1,4 +1,4 @@
-package reponseObject;
+package responseObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @ToString
-public class ResponseUser {
+public class ResponseGetUser {
 
     @JsonProperty("userID")
     private String userId;
@@ -18,5 +18,4 @@ public class ResponseUser {
 
     @JsonProperty("books")
     private List<BookObject> books;
-
 }

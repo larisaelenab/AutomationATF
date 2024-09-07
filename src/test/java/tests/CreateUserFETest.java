@@ -10,8 +10,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import pages.LoginPage;
 import pages.ProfilePage;
-import reponseObject.ResponseToken;
-import reponseObject.ResponseUser;
+import responseObject.ResponseToken;
+import responseObject.ResponseUser;
 import requestObject.RequestUser;
 
 import java.time.Duration;
