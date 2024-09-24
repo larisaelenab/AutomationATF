@@ -101,7 +101,6 @@ public class CreateUserFETest {
         System.out.println(responseBody);
 
         token = responseBody.getToken();
-
     }
 
     public void validateAccountBE(){
@@ -114,8 +113,6 @@ public class CreateUserFETest {
         Response response = request.get("/Account/v1/User/" + userId);
 
         response.body().prettyPrint();
-
-
     }
 
     public void loginApplication(){
@@ -129,15 +126,11 @@ public class CreateUserFETest {
 
         ProfilePage profilePage = new ProfilePage(driver);
         profilePage.validateLoginProcess(requestBody);
-
-
     }
 
     public void deleteAccountFE(){
-
         ProfilePage profilePage = new ProfilePage(driver);
         profilePage.deleteAccount();
-
     }
 
 }
